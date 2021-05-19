@@ -72,7 +72,7 @@ func updateBooks(w http.ResponseWriter, r *http.Request) {
 			books = append(books[:index], books[index+1:]...)
 			var book Book
 			_ = json.NewDecoder(r.Body).Decode(&book)
-			book.ID = strconv.Itoa(rand.Intn(10000000)) //this method is not safe for production
+			book.ID = params["id"]
 			books = append(books, book)
 			json.NewEncoder(w).Encode(book)
 			return

@@ -3,13 +3,13 @@
 package main
 
 import (
-	// "encoding/json"
 	"encoding/json"
 	"log"
 	"net/http"
 
-	// "math/rand"
-	// "strconv"
+	"math/rand"
+	"strconv"
+
 	"github.com/gorilla/mux"
 )
 
@@ -55,7 +55,12 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 
 // POST /createBooks  - Create a Book
 func createBooks(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	var book Book
+	_ = json.NewDecoder(r.Body).Decode(&book)
+	book.ID = strconv.Itoa(rand.Intn(10000000)) //this method is not safe for production
+	books = append(books, book)
+	json.NewEncoder(w).Encode(book)
 }
 
 // PUT /updateBooks/{id} - Update a Book
@@ -65,6 +70,15 @@ func updateBooks(w http.ResponseWriter, r *http.Request) {
 
 // DELETE /deleteBooks/{id}  - Delete a Book
 func deleteBooks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	for index, item := range books {
+		if item.ID == params["id"] {
+			books = append(books[:index], books[index+1:]...)
+			break
+		}
+	}
+	json.NewEncoder(w).Encode(books)
 
 }
 
